@@ -5,8 +5,9 @@
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const saltRounds = 10;
+const keygen = require("keygenerator");
 
-const UsersModel = require("../models/usersModel");
+const User = require("../models/usersSchema");
 
 function validateEmail(email) {
   const re =
@@ -25,7 +26,7 @@ exports.users_create_user = (req, res) => {
     });
   }
   //On verifie si l'email n'existe pas
-  UsersModel.find({
+  User.find({
     email: email,
   })
     .exec()
@@ -38,14 +39,17 @@ exports.users_create_user = (req, res) => {
         //Cryptage du MDP
         bcrypt.genSalt(saltRounds, (err, salt) => {
           bcrypt.hash(password, salt, (err, hash) => {
+            //Creation d'une clé pour la validation
+            const key = keygen._();
             //Enregistrement en BDD
-            const user = new UsersModel({
+            const user = new User({
               _id: new mongoose.Types.ObjectId(),
               email: email,
               pseudo: pseudo,
               password: hash,
               role: "NEW_USER",
               validateUser: false,
+              validationKey: key,
             });
             user
               .save()
@@ -53,6 +57,7 @@ exports.users_create_user = (req, res) => {
                 console.log(result);
                 res.status(200).json({
                   message: "USER_SAVED",
+                  activationLink: "http://localhost:3000/users/activate/" + key,
                 });
               })
               .catch((err) => {
@@ -74,20 +79,51 @@ exports.users_create_user = (req, res) => {
     });
 };
 
-//Activation d'un utilisateur
-exports.users_activate_user = (req, res) => {
-  console.log("Todo : Activation d'un utilisateur enregistré");
-  res.status(200).json({
-    message: "Todo : Activation d'un utilisateur enregistré",
-  });
-};
-
 //Connexion d'un utilisateur
 exports.users_login = (req, res) => {
   console.log("Todo : vérifie la connexion d'un utilisateur");
   res.status(200).json({
     message: "Todo : vérifie la connexion d'un utilisateur",
   });
+};
+
+//Activation d'un utilisateur
+exports.users_activate_user = (req, res) => {
+  //Recupere la clé d'activation
+  const key = req.params.keyActivation;
+
+  //verifie en BDD si il y a la clé
+  User.findOne({ validationKey: key })
+    .then((result) => {
+      console.log(result);
+      //Si oui on active le compte
+      User.updateOne(
+        {
+          _id: result._id,
+        },
+        {
+          validateUser: true,
+        }
+      )
+        .then((resultUpdate) => {
+          res.status(200).json({
+            message: "USER_ACTIVATED",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(404).json({
+            message: "Erreur serveur 2",
+          });
+        });
+      //On renvoie les données
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(404).json({
+        message: "Erreur server",
+      });
+    });
 };
 
 //Suppression d'un utilisateur

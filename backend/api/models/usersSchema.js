@@ -21,14 +21,16 @@ const usersSchema = mongoose.Schema({
   role: {
     type: String,
     required: true,
-    unique: true,
     default: "NEW_USER",
   },
   validateUser: {
     type: Boolean,
     required: true,
-    unique: true,
     default: false,
+  },
+  validationKey: {
+    type: String,
+    required: true,
   },
 });
 

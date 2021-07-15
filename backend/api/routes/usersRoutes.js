@@ -8,7 +8,7 @@ router.post("/", userController.users_create_user);
 
 //Route pour l'activation d'un nouvel utilisateur
 
-router.patch("/activate", userController.users_activate_user);
+router.patch("/activate/:keyActivation", userController.users_activate_user);
 
 /**
  * Route pour se connecter en tant qu'utilisateur
