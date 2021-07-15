@@ -26,7 +26,7 @@
 
  ### Users
  - créer un utilisateur => tout le monde => [POST] /user
- - active un compte => tout le monde => [PATCH] /user/activate/:token
+ - active un compte => tout le monde => [PATCH] /user/activate
  - se connecter => tout le monde => [POST] /user/login
  - supprimer un compe => son utilisateur => [DELETE] /user/:idUser
  - changer le role d'un user => admin => [PATCH] /user/change_role
@@ -34,7 +34,7 @@
  #### structure
 
  - _id
- - mail
+ - email
  - pseudo
  - password
  - role
