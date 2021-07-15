@@ -2,12 +2,12 @@
 
 ##
 
-## Liste des modules, de fonctionnalités et de leur end point + permission
+## Liste des modules, de fonctionnalités et de leurs end points + permissions
 ## + structure des données
 
 
 ### Articles
- - lister les articles publié => Tout le monde => [GET] /articles
+ - lister les articles publiés => Tout le monde => [GET] /articles
  - lister tous les articles même non publié => admin => [Get] /articles
  - afficher un article non publié => admin => [GET] /articles/:idArticle
  - afficher un article publié => tout le monde => [Get] /articles/:idArticle
