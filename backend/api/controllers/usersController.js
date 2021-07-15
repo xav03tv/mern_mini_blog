@@ -1,45 +1,35 @@
-const express = require("express");
-
-const router = express.Router();
-
 /**
- * Routes pour la création d'un nouvel utilisateur
+ * Controller : User
  */
-router.post("/", (req, res) => {
+
+//Création d'un utilsiateur
+exports.users_create_user = (req, res) => {
   console.log("Todo : Création d'un utilisateur");
   res.status(200).json({
     message: "Todo : Création d'un utilsateur",
   });
-});
+};
 
-/**
- * Route pour l'activation d'un nouvel utilisateur
- */
-router.patch("/activate", (req, res) => {
+//Activation d'un utilisateur
+exports.users_activate_user = (req, res) => {
   console.log("Todo : Activation d'un utilisateur enregistré");
   res.status(200).json({
     message: "Todo : Activation d'un utilisateur enregistré",
   });
-});
+};
 
-/**
- * Route pour se connecter en tant qu'utilisateur
- */
-router.post("/login", (req, res) => {
+//Connexion d'un utilisateur
+exports.users_login = (req, res) => {
   console.log("Todo : vérifie la connexion d'un utilisateur");
   res.status(200).json({
     message: "Todo : vérifie la connexion d'un utilisateur",
   });
-});
+};
 
-/**
- * Route pour supprimer un utilisateur
- */
-router.delete("/:idUser", (req, res) => {
+//Suppression d'un utilisateur
+exports.users_delete_user = (req, res) => {
   console.log("Todo : Suppression d'un utilisateur");
   res.status(200).json({
     message: "Todo : Suppression d'un utilisateur",
   });
-});
-
-module.exports = router;
+};
