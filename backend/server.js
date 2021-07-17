@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
-const port = 3000;
 const mongoose = require("mongoose");
 require("dotenv").config();
+const port = process.env.PORT;
 
 require("./api/models/mongooseConnexion");
 
@@ -23,5 +23,5 @@ app.use(express.json());
 app.use("/users", usersRoutes);
 
 app.listen(port, () => {
-  "Server start @ http://localhost:" + port;
+  console.log("Server start @ " + process.env.HOST + ":" + port);
 });

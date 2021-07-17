@@ -61,7 +61,7 @@ exports.users_create_user = (req, res) => {
                 res.status(200).json({
                   ok: true,
                   message: "USER_SAVED",
-                  activationLink: "http://localhost:3000/users/activate/" + key,
+                  activationLink: `${process.env.HOST}:${process.env.PORT}/users/activate/${key}`,
                 });
               })
               .catch((err) => {
@@ -186,7 +186,7 @@ exports.users_delete_user = async (req, res) => {
   //On verifie si je suis le proprio de compte ou ADMIN
   if (
     user &&
-    (req.userData.user.email === user.email || user.role === "ADMIN")
+    (req.userData.user.email === user.email || user.role === "ADMIN_USER")
   ) {
     //Si oui, on supprime
     try {

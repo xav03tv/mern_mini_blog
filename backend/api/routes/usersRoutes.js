@@ -28,7 +28,11 @@ router.delete(
 /**
  * Change le role d'un utilisateur
  */
-router.patch("/change_permissison/", userController.users_change_permissison);
+router.patch(
+  "/change_permissison/",
+  permissionChecker("ADMIN_USER"),
+  userController.users_change_permissison
+);
 
 /**
  * Récupere tous les utilisateurs
