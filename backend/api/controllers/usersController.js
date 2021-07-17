@@ -150,6 +150,7 @@ exports.users_activate_user = (req, res) => {
         },
         {
           validateUser: true,
+          role: "VALIDED_USER",
         }
       )
         .then((resultUpdate) => {
@@ -176,19 +177,38 @@ exports.users_activate_user = (req, res) => {
 //Suppression d'un utilisateur
 exports.users_delete_user = async (req, res) => {
   const id = req.params.idUser;
-  try {
-    const response = await User.deleteOne({ _id: id });
-    res.status(200).json({
-      ok: true,
-      message: "L'utilisateur est supprimé",
-    });
-  } catch (err) {
-    console.log(err);
+  //Check si on a le droit de supprimer
+  console.log(req.userData);
+  //on recupere  l'utilisateur
+  const user = await User.findOne({ _id: req.userData.user.userId });
+  //Verifie si on a un utilisateur
+  console.log(user);
+  //On verifie si je suis le proprio de compte ou ADMIN
+  if (
+    user &&
+    (req.userData.user.email === user.email || user.role === "ADMIN")
+  ) {
+    //Si oui, on supprime
+    try {
+      const response = await User.deleteOne({ _id: id });
+      return res.status(200).json({
+        ok: true,
+        message: "L'utilisateur est supprimé",
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({
+        ok: false,
+        message: "L'utilisateur ne peut etre supprimé",
+      });
+    }
+  } else {
     res.status(400).json({
       ok: false,
-      message: "L'utilisateur ne peut etre supprimé",
+      message: "DELETE_USER_UNAUTHORISED",
     });
   }
+  //On supprime l'utilisateur
 };
 
 //Changer le role d'un utilisateur
