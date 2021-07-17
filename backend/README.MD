@@ -38,6 +38,7 @@ BDD_PASS = code de la base de donnée
 - se connecter => tout le monde => [POST] /user/login
 - supprimer un compe => son utilisateur => [DELETE] /user/:idUser
 - changer le role d'un user => admin => [PATCH] /user/change_role
+- Afficher tous les utilisateurs pour l'admin => [GET] /user/get_all_user
 
 #### structure
 

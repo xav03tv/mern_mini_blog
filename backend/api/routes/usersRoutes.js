@@ -20,4 +20,15 @@ router.post("/login", userController.users_login);
  */
 router.delete("/:idUser", userController.users_delete_user);
 
+/**
+ * Change le role d'un utilisateur
+ */
+router.patch("/change_permisison/", userController.users_change_permissison);
+
+/**
+ * Récupere tous les utilisateurs
+ */
+
+router.get("/get_all_users", userController.users_get_all_users);
+
 module.exports = router;

@@ -133,3 +133,19 @@ exports.users_delete_user = (req, res) => {
     message: "Todo : Suppression d'un utilisateur",
   });
 };
+
+//Changer le role d'un utilisateur
+exports.users_change_permissison = (req, res) => {
+  console.log("TODO : Changer le role d'un utilisateur (Admin only)");
+  res.status(200).json({
+    message: "TODO : Changer le role d'un utilisateur (Admin only)",
+  });
+};
+
+//Récupere tous les utilisateurs
+exports.users_get_all_users = (req, res) => {
+  console.log("TODO : Renvoie la liste de tous les utilisateurs");
+  res.status(200).json({
+    message: "TODO : Renvoie la liste de tous les utilisateurs",
+  });
+};
