@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const saltRounds = 10;
 const keygen = require("keygenerator");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/usersSchema");
 
@@ -22,6 +23,7 @@ exports.users_create_user = (req, res) => {
   //Validation de l'adresse email
   if (!validateEmail(email)) {
     res.status(409).json({
+      ok: false,
       message: "INVALID_EMAIL_FORMAT",
     });
   }
@@ -33,6 +35,7 @@ exports.users_create_user = (req, res) => {
     .then((result) => {
       if (result.length > 0) {
         res.status(406).json({
+          ok: false,
           message: "EMAIL_ALREADY_EXIST",
         });
       } else {
@@ -56,6 +59,7 @@ exports.users_create_user = (req, res) => {
               .then((result) => {
                 console.log(result);
                 res.status(200).json({
+                  ok: true,
                   message: "USER_SAVED",
                   activationLink: "http://localhost:3000/users/activate/" + key,
                 });
@@ -80,11 +84,54 @@ exports.users_create_user = (req, res) => {
 };
 
 //Connexion d'un utilisateur
-exports.users_login = (req, res) => {
-  console.log("Todo : vérifie la connexion d'un utilisateur");
-  res.status(200).json({
-    message: "Todo : vérifie la connexion d'un utilisateur",
-  });
+exports.users_login = async (req, res) => {
+  const { pseudo, password } = req.body;
+  //récupération des données de l'user pour vérifier le MDP
+  try {
+    const user = await User.findOne({ pseudo: pseudo });
+    //Verifier le MDP
+    const matchPSW = await bcrypt.compare(password, user.password);
+    //Si le MDP n'est pas valide
+    if (!matchPSW) {
+      return res.status(400).send({
+        ok: false,
+        message: "Combinaison Mail/Mot de passe incorrect",
+      });
+    }
+    //Verification de l'activation de l'utilisateur
+    if (!user.validateUser) {
+      return res.status(400).send({
+        ok: false,
+        message: "Le compte n'est pas activé",
+      });
+      //Login vérifié, on renvoie les données
+    }
+    const token = jwt.sign(
+      {
+        user: {
+          pseudo: user.pseudo,
+          email: user.email,
+          userId: user._id,
+        },
+      },
+      "123456",
+      {
+        expiresIn: "1h",
+      }
+    );
+    return res.status(200).send({
+      ok: true,
+      message: "login validé",
+      token: token,
+    });
+  } catch (err) {
+    //Envoie d'une erreur car l'user n'est pas valide
+    console.log(err);
+    res.status(400).send({
+      ok: false,
+      message: "Combinaison Mail/Mot de passe incorrect",
+    });
+  }
 };
 
 //Activation d'un utilisateur
@@ -127,11 +174,21 @@ exports.users_activate_user = (req, res) => {
 };
 
 //Suppression d'un utilisateur
-exports.users_delete_user = (req, res) => {
-  console.log("Todo : Suppression d'un utilisateur");
-  res.status(200).json({
-    message: "Todo : Suppression d'un utilisateur",
-  });
+exports.users_delete_user = async (req, res) => {
+  const id = req.params.idUser;
+  try {
+    const response = await User.deleteOne({ _id: id });
+    res.status(200).json({
+      ok: true,
+      message: "L'utilisateur est supprimé",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      ok: false,
+      message: "L'utilisateur ne peut etre supprimé",
+    });
+  }
 };
 
 //Changer le role d'un utilisateur
@@ -143,9 +200,24 @@ exports.users_change_permissison = (req, res) => {
 };
 
 //Récupere tous les utilisateurs
-exports.users_get_all_users = (req, res) => {
-  console.log("TODO : Renvoie la liste de tous les utilisateurs");
+exports.users_get_all_users = async (req, res) => {
+  const users = await User.find();
+  const usersFormated = users.map((user) => ({
+    _id: user._id,
+    pseudo: user.pseudo,
+    email: user.email,
+    role: user.role,
+    validateUser: user.validateUser,
+    validation_link:
+      "http://localhost:3000/users/activate/" + user.validationKey,
+    delete_user: {
+      method: "DELETE",
+      link_delete_user: "http://localhost:3000/users/" + user._id,
+    },
+  }));
   res.status(200).json({
-    message: "TODO : Renvoie la liste de tous les utilisateurs",
+    ok: true,
+    usersQty: usersFormated.length,
+    users: usersFormated,
   });
 };
